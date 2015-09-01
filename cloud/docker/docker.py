@@ -1646,7 +1646,7 @@ def main():
             env             = dict(type='dict'),
             dns             = dict(),
             detach          = dict(default=True, type='bool'),
-            state           = dict(default='started', choices=['present', 'started', 'reloaded', 'restarted', 'stopped', 'killed', 'absent', 'running']),
+            state           = dict(default='started', choices=['present', 'started', 'reloaded', 'restarted', 'stopped', 'killed', 'absent', 'running', 'image_present']),
             signal          = dict(default=None),
             restart_policy  = dict(default=None, choices=['always', 'on-failure', 'no']),
             restart_policy_retry = dict(default=0, type='int'),
@@ -1697,7 +1697,7 @@ def main():
         # container is stopped, but image for new one is now downloaded yet.
         # It also prevents removal of running container before realizing
         # that requested image cannot be retrieved.
-        if pull == "always" or (state == 'reloaded' and manager.get_inspect_image() is None):
+        if pull == "always" or (state == 'reloaded' and manager.get_inspect_image() is None) or state == 'image_present':
             manager.pull_image()
 
         containers = ContainerSet(manager)
@@ -1716,6 +1716,8 @@ def main():
             killed(manager, containers, count, name)
         elif state == 'absent':
             absent(manager, containers, count, name)
+        elif state == 'image_present':
+            pass
         else:
             module.fail_json(msg='Unrecognized state %s. Must be one of: '
                                  'present; started; reloaded; restarted; '
