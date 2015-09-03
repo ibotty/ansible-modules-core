@@ -85,6 +85,8 @@ def run_setup(module):
     for (k, v) in facts.items():
         setup_options["ansible_%s" % k.replace('-', '_')] = v
 
+    setup_options["check_mode"] = module.check_mode
+
     # Look for the path to the facter and ohai binary and set
     # the variable to that path.
     facter_path = module.get_bin_path('facter')
